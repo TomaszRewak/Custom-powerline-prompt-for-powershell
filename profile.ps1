@@ -70,11 +70,11 @@ function prompt {
             )
         }
 
-        [PromptBuilder] WithText([string] $text) {
-            return $this.WithText($text, $this.Background)
+        [PromptBuilder] WithSection([string] $text) {
+            return $this.WithSection($text, $this.Background)
         }
 
-        [PromptBuilder] WithText([string] $text, [Color] $background) {
+        [PromptBuilder] WithSection([string] $text, [Color] $background) {
             return [PromptBuilder]::new(
                 "$($this.Text)$([Color]::Foreground($background))$([Color]::Background($this.Background))$($this.ReversedSeparator)$([Color]::Foreground($this.Background))$([Color]::Background($background))$($this.Separator)$([Color]::Foreground($this.Foreground))$text",
                 $this.Foreground,
@@ -115,7 +115,7 @@ function prompt {
         }
 
         [string] ToString() {
-            $final = $this.WithForeground([Color]::Default).WithText("", [Color]::Default)
+            $final = $this.WithForeground([Color]::Default).WithSection("", [Color]::Default)
             return $final.Text
         }
     }
@@ -131,12 +131,12 @@ function prompt {
         $git_branch = $(git rev-parse --abbrev-ref HEAD)
     }
     
-    $builder = [PromptBuilder]::new()
+    $builder = [PromptBuilder]::new()    
     $builder = $builder.WithReversedSeparator(0xE0CA)
 
     if ($sections[0].EndsWith(":"))
     {
-        $builder = $builder.WithText(" $($sections[0].TrimEnd([char]':'))", [Color]::new(227, 146, 52))
+        $builder = $builder.WithSection(" $($sections[0].TrimEnd([char]':'))", [Color]::new(227, 146, 52))
         $builder = $builder.WithSeparator(0xE0B4)
 
         $level += 1
@@ -144,7 +144,7 @@ function prompt {
 
     if ($path.StartsWith("C:\Users\tomas"))
     {
-        $builder = $builder.WithText(" Tomasz ", [Color]::new(52, 128, 235))
+        $builder = $builder.WithSection(" Tomasz ", [Color]::new(52, 128, 235))
         $builder = $builder.WithSeparator(0xE0B8)
 
         $level += 2
@@ -152,7 +152,7 @@ function prompt {
 
     if ($path.StartsWith("C:\Users\tomas\Programy"))
     {
-        $builder = $builder.WithText(" 💻 ", [Color]::new(54, 109, 186))
+        $builder = $builder.WithSection(" 💻 ", [Color]::new(54, 109, 186))
         $builder = $builder.WithSeparator(0xE0B8)
 
         $level += 1
@@ -161,20 +161,20 @@ function prompt {
     for(; $level -lt $sections.Length; $level++)
     {
         if ($level -eq $git_root) {
-            $builder = $builder.WithText(" $($sections[$level]) ", [Color]::new(70, 138, 74))
+            $builder = $builder.WithSection(" $($sections[$level]) ", [Color]::new(70, 138, 74))
             $builder = $builder.WithSeparator(0xE0A0)
-            $builder = $builder.WithText(" $git_branch ", [Color]::new(72, 163, 77))
+            $builder = $builder.WithSection(" $git_branch ", [Color]::new(72, 163, 77))
         }
         elseif ($sections[$level] -eq "Debug" -or $sections[$level] -eq "Release")
         {
             $builder = $builder.WithReversedSeparator(0xE0C2)
-            $builder = $builder.WithText(" $($sections[$level]) ", [Color]::new(186, 54, 54))
+            $builder = $builder.WithSection(" $($sections[$level]) ", [Color]::new(186, 54, 54))
         }
         elseif ($level % 2 -eq 0) {
-            $builder = $builder.WithText(" $($sections[$level]) ", [Color]::new(99, 99, 99))
+            $builder = $builder.WithSection(" $($sections[$level]) ", [Color]::new(99, 99, 99))
         }
         else {
-            $builder = $builder.WithText(" $($sections[$level]) ", [Color]::new(80, 80, 80))
+            $builder = $builder.WithSection(" $($sections[$level]) ", [Color]::new(80, 80, 80))
         }
 
         $builder = $builder.WithSeparator(0xE0B8)
@@ -182,7 +182,7 @@ function prompt {
 
     $builder = $builder.WithoutSeparator()
     $builder = $builder.WithSeparator(0xE0B0)
-    $builder = $builder.WithText(" ", [Color]::Default)
+    $builder = $builder.WithSection(" ", [Color]::Default)
 
     return $builder.ToString()
 }
